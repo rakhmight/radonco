@@ -1,0 +1,462 @@
+<!doctype html> 
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>
+    RadOnco — <%= mode === "edit" ? "редактирование пациента" : (mode === "view" ? "карта пациента" : "новый пациент") %>
+  </title>
+  <style>
+    :root {
+      --bg-main: #f3f4f6;
+      --bg-header: #ffffffee;
+      --bg-card: #ffffffee;
+      --border-subtle: #d1d5db;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --accent: #0ea5e9;
+      --accent-strong: #0284c7;
+      --danger: #b91c1c;
+      --danger-hover: #991b1b;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(56,189,248,0.35), transparent 55%),
+        radial-gradient(circle at 0% 100%, rgba(148,163,184,0.5), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(148,163,184,0.6), transparent 60%);
+      background-color: #e5e7eb;
+      margin: 0;
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--bg-header);
+      backdrop-filter: blur(18px);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    header h1 span.logo-mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(56,189,248,0.7);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 30%, rgba(56,189,248,0.3), transparent 65%);
+    }
+    header h1 span.logo-mark::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(56,189,248,0.7);
+      border-top-color: transparent;
+      border-left-color: transparent;
+      transform: rotate(45deg);
+    }
+    header .muted {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    header a {
+      color: var(--accent-strong);
+      text-decoration: none;
+      margin-left: 16px;
+      font-size: 14px;
+    }
+    header a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      padding: 20px 24px 40px;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 18px;
+      padding: 20px 24px;
+      box-shadow:
+        0 18px 40px rgba(15,23,42,0.12),
+        inset 0 0 0 1px rgba(148,163,184,0.35);
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 16px 24px;
+    }
+    .full {
+      grid-column: 1 / 3;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: #f9fafb;
+      color: var(--text-main);
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+    }
+    textarea {
+      min-height: 80px;
+    }
+
+    .actions {
+      grid-column: 1 / 3;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      gap: 8px;
+    }
+    .actions-left {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #f9fafb;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(56,189,248,0.35);
+    }
+    .btn.secondary {
+      background: transparent;
+      box-shadow: none;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+    }
+    .btn.secondary:hover {
+      background: rgba(255,255,255,0.9);
+    }
+    .btn.danger {
+      background: var(--danger);
+      box-shadow: 0 8px 18px rgba(248,113,113,0.4);
+    }
+    .btn.danger:hover {
+      background: var(--danger-hover);
+    }
+    .btn:hover {
+      opacity: 0.97;
+    }
+
+    .muted {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .last-change {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .last-change strong {
+      color: var(--accent-strong);
+    }
+
+    /* ========= адаптация под планшет ========= */
+    @media (max-width: 1024px) {
+      main {
+        max-width: 100%;
+        padding: 16px 16px 32px;
+      }
+
+      .card {
+        border-radius: 16px;
+        padding: 16px 16px 20px;
+      }
+
+      form {
+        grid-template-columns: 1fr;   /* одна колонка на планшете */
+        grid-gap: 14px;
+      }
+
+      .full {
+        grid-column: 1 / 2;
+      }
+
+      .actions {
+        grid-column: 1 / 2;
+      }
+    }
+
+    /* ========= адаптация под мобильный ========= */
+    @media (max-width: 768px) {
+      header {
+        padding: 10px 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      header h1 {
+        font-size: 18px;
+      }
+
+      header a {
+        font-size: 13px;
+        margin-left: 0;
+        margin-right: 12px;
+      }
+
+      main {
+        padding: 12px 10px 24px;
+      }
+
+      .card {
+        padding: 14px 12px 18px;
+        border-radius: 14px;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+        grid-gap: 12px;
+      }
+
+      .full {
+        grid-column: 1 / 2;
+      }
+
+      .actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 10px;
+      }
+
+      .actions-left {
+        justify-content: space-between;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .last-change {
+        text-align: left;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>
+        <span class="logo-mark"></span>
+        RadOnco — карта пациента
+      </h1>
+      <div class="muted">
+        <%= mode === "edit" ? "Редактирование" : (mode === "view" ? "Просмотр" : "Новый пациент") %>
+      </div>
+    </div>
+    <div>
+      <a href="/patients">← к списку</a>
+      <a href="/logout">Выход</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <form method="post" action="<%= mode === 'edit'
+        ? ('/patients/' + patient.id + '/edit')
+        : (mode === 'view'
+           ? '#'
+           : '/patients/new') %>">
+
+        <div>
+          <label for="patient_id">ID пациента</label>
+          <input id="patient_id" name="patient_id"
+            value="<%= patient.patient_id || '' %>"
+            <%= mode === "view" ? "readonly" : "required" %> />
+          <div class="muted">
+            Этот ID врач вводит в Telegram-боте, чтобы получить карточку.
+          </div>
+        </div>
+
+        <div>
+          <label for="full_name">ФИО пациента</label>
+          <input id="full_name" name="full_name"
+            value="<%= patient.full_name || '' %>"
+            <%= mode === "view" ? "readonly" : "required" %> />
+        </div>
+
+        <div>
+          <label for="birth_date">Дата рождения</label>
+          <input id="birth_date" name="birth_date" type="date"
+            value="<%= patient.birth_date || '' %>"
+            <%= mode === "view" ? "readonly" : "" %> />
+        </div>
+
+        <div>
+          <label for="region">Регион</label>
+          <input id="region" name="region"
+            value="<%= patient.region || '' %>"
+            <%= mode === "view" ? "readonly" : "" %> />
+        </div>
+
+        <div class="full">
+          <label for="diagnosis">Диагноз (онкологический, TNM)</label>
+          <input id="diagnosis" name="diagnosis"
+            value="<%= patient.diagnosis || '' %>"
+            <%= mode === "view" ? "readonly" : "" %> />
+        </div>
+
+        <div class="full">
+          <label for="topometry">Топометрия (планирующая КТ, зона облучения)</label>
+          <textarea id="topometry" name="topometry"
+            <%= mode === "view" ? "readonly" : "" %>><%= patient.topometry || '' %></textarea>
+        </div>
+
+        <div class="full">
+          <label for="method_gray">Методика ЛТ — суммарная доза (Гр, числом)</label>
+          <input id="method_gray"
+                 name="method_gray"
+                 type="number"
+                 step="0.1"
+                 min="0"
+                 value="<%= patient.method_gray || '' %>"
+                 <%= mode === "view" ? "readonly" : "" %> />
+          <div class="muted">
+            Введите только число, например: 50 или 50.4
+          </div>
+        </div>
+
+        <div class="full">
+          <label for="diary">Дневник курса ЛТ</label>
+          <textarea id="diary" name="diary"
+            <%= mode === "view" ? "readonly" : "" %>><%= patient.diary || '' %></textarea>
+        </div>
+
+        <div class="full">
+          <label for="complaints">Жалобы</label>
+          <textarea id="complaints" name="complaints"
+            <%= mode === "view" ? "readonly" : "" %>><%= patient.complaints || '' %></textarea>
+        </div>
+
+        <div class="full">
+          <label for="prescriptions">Назначения (сопроводительная терапия)</label>
+          <textarea id="prescriptions" name="prescriptions"
+            <%= mode === "view" ? "readonly" : "" %>><%= patient.prescriptions || '' %></textarea>
+        </div>
+
+        <div class="full">
+          <label for="discharge_summary">Выписка (итог по курсу ЛТ)</label>
+          <textarea id="discharge_summary" name="discharge_summary"
+            <%= mode === "view" ? "readonly" : "" %>><%= patient.discharge_summary || '' %></textarea>
+        </div>
+
+        <div class="full">
+          <label for="complications">Осложнения (лучевые реакции, степени)</label>
+          <textarea id="complications" name="complications"
+            <%= mode === "view" ? "readonly" : "" %>><%= patient.complications || '' %></textarea>
+        </div>
+
+        <div>
+          <label for="status">Статус курса ЛТ</label>
+          <% const st = patient.status || "on_treatment"; %>
+          <select id="status" name="status" <%= mode === "view" ? "disabled" : "" %>>
+            <option value="planning"     <%= st === "planning" ? "selected" : "" %>>Планирование</option>
+            <option value="on_treatment" <%= st === "on_treatment" ? "selected" : "" %>>На лечении</option>
+            <option value="finished"     <%= st === "finished" ? "selected" : "" %>>Завершён курс</option>
+            <option value="follow_up"    <%= st === "follow_up" ? "selected" : "" %>>Наблюдение</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Обновлено</label>
+          <div class="muted">
+            <%= patient.updated_at || "будет заполнено после сохранения" %>
+          </div>
+          <% if (lastChange) { %>
+            <div class="last-change">
+              Последнее изменение:
+              <strong><%= lastChange.changed_at %></strong>
+              <% if (lastChange.user_full_name || lastChange.user_login) { %>
+                — пользователь
+                <strong><%= lastChange.user_full_name || lastChange.user_login %></strong>
+              <% } %>
+              <% if (lastChange.source === "bot") { %>
+                (через Telegram-бота)
+              <% } else if (lastChange.source === "web-edit") { %>
+                
+              <% } else if (lastChange.source === "web-create") { %>
+                (создание карты)
+              <% } %>
+              <% if (lastChange.field) { %>
+                , поле: "<%= lastChange.field %>"
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+
+        <div class="actions">
+          <div class="actions-left">
+            <a class="btn secondary" href="/patients">← Назад</a>
+
+            <% if (mode === "edit") { %>
+              <button
+                class="btn danger"
+                type="submit"
+                formmethod="post"
+                formaction="/patients/<%= patient.id %>/delete"
+                onclick="return confirm('Точно удалить карту пациента? Это действие необратимо.');"
+              >
+                🗑 Удалить
+              </button>
+            <% } %>
+          </div>
+
+          <div>
+            <% if (mode !== "view") { %>
+              <button class="btn" type="submit">
+                💾 Сохранить
+              </button>
+            <% } %>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </main>
+</body>
+</html>

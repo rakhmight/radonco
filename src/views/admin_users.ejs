@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>RadOnco — пользователи</title>
+
+  <script>
+    // Инициализация темы до отрисовки
+    (function () {
+      try {
+        const saved = localStorage.getItem('rtsync-theme');
+        const root = document.documentElement;
+        if (saved === 'light' || saved === 'dark') {
+          root.dataset.theme = saved;
+        } else {
+          root.dataset.theme = 'dark'; // дефолт — тёмная
+        }
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+
+  <style>
+    :root {
+      /* светлая тема по умолчанию */
+      --bg-main: #f3f4f6;
+      --bg-header: #ffffffee;
+      --bg-card: #ffffff;
+      --border-subtle: #d1d5db;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --danger: #b91c1c;
+      --danger-hover: #991b1b;
+    }
+
+    :root[data-theme="dark"] {
+      --bg-main: #020617;
+      --bg-header: #0f172a;
+      --bg-card: #020617;
+      --border-subtle: #1f2937;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --accent: #60a5fa;
+      --danger: #b91c1c;
+      --danger-hover: #991b1b;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      margin: 0;
+    }
+    header {
+      background: var(--bg-header);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    header .user {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    header a {
+      color: var(--accent);
+      text-decoration: none;
+      margin-left: 16px;
+      font-size: 14px;
+    }
+    header a:hover {
+      text-decoration: underline;
+    }
+
+    .theme-toggle {
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-main);
+      padding: 4px 10px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      margin-right: 12px;
+    }
+
+    main {
+      padding: 20px 24px 40px;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: #f9fafb;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .btn:hover {
+      opacity: 0.95;
+    }
+    .btn.small {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+    .btn.danger {
+      background: var(--danger);
+    }
+    .btn.danger:hover {
+      background: var(--danger-hover);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 8px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    th {
+      text-align: left;
+      background: transparent;
+      position: sticky;
+      top: 0;
+    }
+    tr:hover td {
+      background: rgba(148,163,184,0.16);
+    }
+    .muted {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    a.row-link {
+      color: inherit;
+      text-decoration: none;
+    }
+    a.row-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>RadOnco — пользователи</h1>
+      <div class="user">
+        Админ: <%= user.full_name || user.login %>
+      </div>
+    </div>
+    <div>
+      <button id="theme-toggle" class="theme-toggle" type="button">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-label">Тёмная</span>
+      </button>
+      <a href="/patients">← к пациентам</a>
+      <a href="/logout">Выход</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="top-bar">
+      <div>
+        <a class="btn" href="/admin/users/new">➕ Новый пользователь</a>
+      </div>
+      <div class="muted">
+        Управление логинами, ролями и Telegram ID.
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Логин</th>
+          <th>ФИО</th>
+          <th>Роль</th>
+          <th>Telegram ID</th>
+          <th>Создан</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!users || users.length === 0) { %>
+          <tr>
+            <td colspan="7" class="muted">
+              Пользователи не найдены.
+            </td>
+          </tr>
+        <% } else { %>
+          <% users.forEach(u => { %>
+            <tr>
+              <td><%= u.id %></td>
+              <td>
+                <a class="row-link" href="/admin/users/<%= u.id %>/edit">
+                  <%= u.login %>
+                </a>
+              </td>
+              <td><%= u.full_name || "" %></td>
+              <td><%= u.role %></td>
+              <td><%= u.telegram_id || "" %></td>
+              <td class="muted"><%= u.created_at || "" %></td>
+              <td>
+                <% if (u.id !== user.id) { %>
+                  <form method="post"
+                        action="/admin/users/<%= u.id %>/delete"
+                        onsubmit="return confirm('Удалить пользователя <%= u.login %>?');">
+                    <button class="btn small danger" type="submit">Удалить</button>
+                  </form>
+                <% } else { %>
+                  <span class="muted">нельзя удалить себя</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        <% } %>
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const btn = document.getElementById('theme-toggle');
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
+
+      function applyLabel() {
+        const theme = root.dataset.theme === 'light' ? 'light' : 'dark';
+        if (theme === 'dark') {
+          icon.textContent = '🌙';
+          label.textContent = 'Тёмная';
+        } else {
+          icon.textContent = '☀️';
+          label.textContent = 'Светлая';
+        }
+      }
+
+      if (!btn) return;
+      applyLabel();
+
+      btn.addEventListener('click', () => {
+        const current = root.dataset.theme === 'light' ? 'light' : 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem('rtsync-theme', next);
+        } catch (e) {}
+        applyLabel();
+      });
+    })();
+  </script>
+</body>
+</html>

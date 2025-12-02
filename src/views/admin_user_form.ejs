@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>
+    RadOnco — <%= mode === "edit" ? "редактирование пользователя" : "новый пользователь" %>
+  </title>
+
+  <script>
+    (function () {
+      try {
+        const saved = localStorage.getItem('rtsync-theme');
+        const root = document.documentElement;
+        if (saved === 'light' || saved === 'dark') {
+          root.dataset.theme = saved;
+        } else {
+          root.dataset.theme = 'dark';
+        }
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+
+  <style>
+    :root {
+      --bg-main: #f3f4f6;
+      --bg-header: #ffffffee;
+      --bg-card: #ffffff;
+      --border-subtle: #d1d5db;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+    }
+
+    :root[data-theme="dark"] {
+      --bg-main: #020617;
+      --bg-header: #0f172a;
+      --bg-card: #020617;
+      --border-subtle: #1f2937;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --accent: #60a5fa;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      margin: 0;
+    }
+    header {
+      background: var(--bg-header);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    header a {
+      color: var(--accent);
+      text-decoration: none;
+      margin-left: 16px;
+      font-size: 14px;
+    }
+    header a:hover {
+      text-decoration: underline;
+    }
+
+    .theme-toggle {
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-main);
+      padding: 4px 10px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      margin-right: 12px;
+    }
+
+    main {
+      padding: 20px 24px 40px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 16px 24px;
+      background: var(--bg-card);
+      padding: 20px 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+    }
+    .full {
+      grid-column: 1 / 3;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: #f9fafb;
+      color: var(--text-main);
+      font-size: 14px;
+      font-family: inherit;
+    }
+    :root[data-theme="dark"] input,
+    :root[data-theme="dark"] select {
+      background: #020617;
+      color: #e5e7eb;
+      border-color: #4b5563;
+    }
+
+    .actions {
+      grid-column: 1 / 3;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: #f9fafb;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+    }
+    .btn.secondary:hover {
+      background: rgba(255,255,255,0.9);
+    }
+    .btn:hover {
+      opacity: 0.95;
+    }
+    .muted {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .error {
+      grid-column: 1 / 2;
+      color: #f97373;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>RadOnco — <%= mode === "edit" ? "редактирование пользователя" : "новый пользователь" %></h1>
+      <div class="muted">
+        Только администратор.
+      </div>
+    </div>
+    <div>
+      <button id="theme-toggle" class="theme-toggle" type="button">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-label">Тёмная</span>
+      </button>
+      <a href="/admin/users">← к пользователям</a>
+      <a href="/logout">Выход</a>
+    </div>
+  </header>
+
+  <main>
+    <form method="post" action="<%= mode === 'edit'
+      ? ('/admin/users/' + u.id + '/edit')
+      : '/admin/users/new' %>">
+
+      <% if (error) { %>
+        <div class="error"><%= error %></div>
+      <% } else { %>
+        <div></div>
+      <% } %>
+
+      <div>
+        <label for="login">Логин</label>
+        <input id="login" name="login"
+          value="<%= u.login || '' %>"
+          <%= mode === "edit" ? "readonly" : "required" %> />
+      </div>
+
+      <div>
+        <label for="full_name">ФИО</label>
+        <input id="full_name" name="full_name"
+          value="<%= u.full_name || '' %>" />
+      </div>
+
+      <div>
+        <label for="role">Роль</label>
+        <% const r = u.role || "doctor"; %>
+        <select id="role" name="role">
+          <option value="doctor" <%= r === "doctor" ? "selected" : "" %>>Врач</option>
+          <option value="admin"  <%= r === "admin" ? "selected" : "" %>>Админ</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="telegram_id">Telegram ID</label>
+        <input id="telegram_id" name="telegram_id"
+          value="<%= u.telegram_id || '' %>" />
+        <div class="muted">
+          ID пользователя в Telegram.
+        </div>
+      </div>
+
+      <div class="full">
+        <label for="password">
+          Пароль
+          <% if (mode === "edit") { %>
+            <span class="muted">(оставьте пустым, если не нужно менять)</span>
+          <% } %>
+        </label>
+        <input id="password" name="password" type="password"
+          <%= mode === "create" ? "required" : "" %> />
+      </div>
+
+      <div class="actions">
+        <div>
+          <a class="btn secondary" href="/admin/users">← Назад</a>
+        </div>
+        <div>
+          <button class="btn" type="submit">
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const btn = document.getElementById('theme-toggle');
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
+
+      function applyLabel() {
+        const theme = root.dataset.theme === 'light' ? 'light' : 'dark';
+        if (theme === 'dark') {
+          icon.textContent = '🌙';
+          label.textContent = 'Тёмная';
+        } else {
+          icon.textContent = '☀️';
+          label.textContent = 'Светлая';
+        }
+      }
+
+      if (!btn) return;
+      applyLabel();
+
+      btn.addEventListener('click', () => {
+        const current = root.dataset.theme === 'light' ? 'light' : 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem('rtsync-theme', next);
+        } catch (e) {}
+        applyLabel();
+      });
+    })();
+  </script>
+</body>
+</html>

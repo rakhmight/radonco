@@ -1,0 +1,23 @@
+{
+  "name": "radonco-patient-cards",
+  "version": "1.2.0",
+  "description": "Радиоонкология: веб-карты пациентов + Telegram-бот с пользователями и уведомлениями",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.0.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.0",
+    "ejs": "^3.1.9",
+    "express": "^4.19.0",
+    "express-session": "^1.17.3",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

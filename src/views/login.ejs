@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>RadOnco — вход</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0b1020;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #111827;
+      padding: 24px 32px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      width: 320px;
+    }
+    h1 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 20px;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+    }
+    button {
+      margin-top: 16px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    .error {
+      margin-top: 8px;
+      color: #f97373;
+      font-size: 13px;
+      text-align: center;
+    }
+    .hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #9ca3af;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>RadOnco — вход</h1>
+    <form method="post" action="/login">
+      <label for="login">Логин</label>
+      <input id="login" name="login" required />
+
+      <label for="password">Пароль</label>
+      <input id="password" name="password" type="password" required />
+
+      <button type="submit">Войти</button>
+
+      <% if (error) { %>
+        <div class="error"><%= error %></div>
+      <% } else { %>
+        <div class="hint">
+          
+        </div>
+      <% } %>
+    </form>
+  </div>
+</body>
+</html>
