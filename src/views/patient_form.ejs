@@ -348,18 +348,15 @@
         </div>
 
         <div class="full">
-          <label for="method_gray">Методика ЛТ — суммарная доза (Гр, числом)</label>
-          <input id="method_gray"
-                 name="method_gray"
-                 type="number"
-                 step="0.1"
-                 min="0"
-                 value="<%= patient.method_gray || '' %>"
-                 <%= mode === "view" ? "readonly" : "" %> />
-          <div class="muted">
-            Введите только число, например: 50 или 50.4
-          </div>
+          <label for="method_gray">Методика ЛТ и доза (Гр, текстом)</label>
+        <textarea
+          id="method_gray"
+          name="method_gray"
+          <%= mode === "view" ? "readonly" : "" %>><%= patient.method_gray || '' %></textarea>
+        <div class="muted">
+          Можно указать схему и дозу, например: «IMRT 50 Гр / 25 фракций, PTV1 50 Гр, PTV2 46 Гр».
         </div>
+      </div>
 
         <div class="full">
           <label for="diary">Дневник курса ЛТ</label>
